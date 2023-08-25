@@ -15,10 +15,10 @@ const btnClear = $("#btnClear");
 
 
 
-
+addCustomersToTable();
 //id increment
 function incrementCusId(currentID) {
-    if (currentID==='no'){
+    /*if (currentID==='no'){
         cusId='C00-001';
         cusIDF.val(cusId);
     }else {
@@ -27,9 +27,9 @@ function incrementCusId(currentID) {
         cusId = "C00-" + number.toString().padStart(3, "0");
         console.log(cusId);
         cusIDF.val(cusId);
-    }
+    }*/
 }
-incrementCusId('no');
+//incrementCusId('no');
 
 function clearCustomerFields() {
     //cusIDF.val("");
@@ -42,18 +42,41 @@ function clearCustomerFields() {
 
 function addCustomersToTable() {
     //get All customers
+    //Ajax
+    $.ajax({
+        url:'http://localhost:8080/Back_End_Web_exploded/customer',
+        success:function (res) {
+            //console.log(res);
+            tblCustomers.empty();
+
+            for (let i = 0; i < res.length; i++) {
+                let row = $('<tr> <td>'+ res[i].id +'</td> <td>'+ res[i].name +'</td> <td>'+ res[i].address +'</td> <td>'+ res[i].contact +'</td> </tr>');
+                tblCustomers.append(row);
+            }
+        },
+        error:function (error) {
+            console.log(error.status);
+        }
+    })
 }
 
 btnAdd.click(function (){
-    const customerForm = $("#customerForm");
-
-    //Adding a customer
-    //Ajax
-    /*customerList.push( new Customer(cusID,cusName,cusAddress,cusContact));
-    addCustomersToTable()
-
-    clearCustomerFields();
-    incrementCusId(cusID);*/
+    const customerForm = $("#customerForm").serialize();
+    if (validateFields()){
+        $.ajax({
+            url:'http://localhost:8080/Back_End_Web_exploded/customer',
+            data:customerForm,
+            method:"POST",
+            success:function (res) {
+                addCustomersToTable();
+                clearCustomerFields();
+                //incrementCusId(cusId);
+                console.log(res.state);
+            },error:function (error){
+                console.log(error.status)
+            }
+        })
+    }
 });
 
 tblCustomers.dblclick(function (event){
@@ -81,19 +104,22 @@ btnUpdate.click(function (){
         let cusAddress = cusAddressF.val();
         let cusContact = cusContactF.val();
 
-        //Ajax
-
-        /*clearCustomerFields();
-
-        console.log(customerList);
-
-        btnUpdate.prop('disabled',true);
-        btnDelete.prop('disabled',true);
-        btnAdd.prop('disabled',false);
-
-        //getting the first td of the last tr and
-        incrementCusId(lastTr.find('td:first').text());
-        cusIDF.val(cusId);*/
+        let cusOb={id:cusID,name:cusName,address:cusAddress,salary:cusContact}
+        JSON.stringify(cusOb);
+        $.ajax({
+            url:'http://localhost:8080/Back_End_Web_exploded/customer',
+            method:'put',
+            contentType:"application/json",
+            data:JSON.stringify(cusOb),
+            success:function (res) {
+                addCustomersToTable();
+                clearCustomerFields();
+                //incrementCusId(cusId);
+                console.log(res.state);
+            },error:function (error){
+                console.log(error.status)
+            }
+        });
     }
 });
 
@@ -102,15 +128,18 @@ btnDelete.click(function (){
     if (confirm("Are you sure you want to delete this Customer?")) {
         let cusID = cusIDF.val();
 
-        //Ajax
-        /*clearCustomerFields();
-
-        btnUpdate.prop('disabled',true);
-        btnDelete.prop('disabled',true);
-        btnAdd.prop('disabled',false);
-
-        incrementCusId(lastTr.find('td:first').text());
-        cusIDF.val(cusId);*/
+        $.ajax({
+            url:'http://localhost:8080/Back_End_Web_exploded/customer?cusID='+cusID,
+            method: "delete",
+            success:function (res) {
+                addCustomersToTable();
+                clearCustomerFields();
+                //incrementCusId(cusId);
+                console.log(res.state);
+            },error:function (error){
+                console.log(error.status)
+            }
+        });
     }
 });
 
