@@ -211,6 +211,7 @@ $('#purchaseOrder').click(function () {
         contentType: "application/json",
         data: JSON.stringify(order),
         success: function (res) {
+            console.log(res.state)
         },
         error: function (error) {
             console.log(error.status);
