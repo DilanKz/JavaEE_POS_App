@@ -3,17 +3,17 @@ let selectItemIds = $('#itemIds');
 let totalField = $('#maxTot');
 
 let selectedCustomerID;
-let total=0;
+let total = 0;
 let cartItems = [];
 
-function nextOrderID(){
+function nextOrderID() {
 
 }
 
 loadCustomerOptionIds()
 loadItemOptionIds()
 
-function loadCustomerOptionIds(){
+function loadCustomerOptionIds() {
     /*selectCusIds.empty();
     selectCusIds.append($('<option selected>Select_ID</option>'));
 
@@ -23,36 +23,36 @@ function loadCustomerOptionIds(){
     }*/
 
     $.ajax({
-        url:'http://localhost:8080/Back_End_Web_exploded/customer',
-        success:function (res) {
+        url: 'http://localhost:8080/Back_End_Web_exploded/customer',
+        success: function (res) {
             selectCusIds.empty();
             selectCusIds.append($('<option selected>Select_ID</option>'));
 
             for (let i = 0; i < res.length; i++) {
-                let option = $('<option>'+res[i].id+'</option>');
+                let option = $('<option>' + res[i].id + '</option>');
                 selectCusIds.append(option);
             }
         },
-        error:function (error) {
+        error: function (error) {
             console.log(error.status);
         }
     })
 }
 
-function loadItemOptionIds(){
+function loadItemOptionIds() {
 
     $.ajax({
-        url:'http://localhost:8080/Back_End_Web_exploded/item',
-        success:function (res) {
+        url: 'http://localhost:8080/Back_End_Web_exploded/item',
+        success: function (res) {
             selectItemIds.empty();
             selectItemIds.append($('<option selected>Select_ID</option>'));
 
             for (let i = 0; i < res.length; i++) {
-                let option = $('<option>'+res[i].code+'</option>');
+                let option = $('<option>' + res[i].code + '</option>');
                 selectItemIds.append(option);
             }
         },
-        error:function (error) {
+        error: function (error) {
             console.log(error.status);
         }
     })
@@ -87,7 +87,7 @@ $('#dtf').val(dateFormatter);*/
     $('#dtf').val(`${year}-${month}-${day}`);
 }*/
 
-function clearPoFields(){
+function clearPoFields() {
     $('#itemIds option:contains("Select_ID")').prop('selected', true);
     $('#poItemDesc').val("");
     $('#poItemQtyOnHand').val("");
@@ -95,19 +95,19 @@ function clearPoFields(){
     $('#poItemQty').val("");
 }
 
-selectCusIds.click(function (){
+selectCusIds.click(function () {
     let selectedCusID = $("#customerIds :selected").text();
 
-    if (selectedCusID!=="Select_ID"){
+    if (selectedCusID !== "Select_ID") {
         console.log(selectedCusID);
 
         $.ajax({
-            url:'http://localhost:8080/Back_End_Web_exploded/placeOrder?option=customer&id='+selectedCusID,
-            success:function (res) {
-                selectedCustomerID=res.id;
+            url: 'http://localhost:8080/Back_End_Web_exploded/placeOrder?option=customer&id=' + selectedCusID,
+            success: function (res) {
+                selectedCustomerID = res.id;
                 $('#poCustomerName').val(res.name);
             },
-            error:function (error) {
+            error: function (error) {
                 console.log(error.status);
             }
         })
@@ -116,23 +116,23 @@ selectCusIds.click(function (){
 
 });
 
-selectItemIds.click(function (){
+selectItemIds.click(function () {
     let selectedItemID = $("#itemIds :selected").text();
 
-    if (selectedItemID!=="Select_ID"){
+    if (selectedItemID !== "Select_ID") {
         console.log(selectedItemID);
 
         $.ajax({
-            url:'http://localhost:8080/Back_End_Web_exploded/placeOrder?option=items&id='+selectedItemID,
-            method:"get",
-            success:function (res) {
+            url: 'http://localhost:8080/Back_End_Web_exploded/placeOrder?option=items&id=' + selectedItemID,
+            method: "get",
+            success: function (res) {
 
                 $('#poItemDesc').val(res.desc);
                 $('#poItemQtyOnHand').val(res.qty);
                 $('#poItemUP').val(res.price);
 
             },
-            error:function (error) {
+            error: function (error) {
                 console.log(error.status);
             }
         })
@@ -144,9 +144,9 @@ selectItemIds.click(function (){
 
 });
 
-$('#btnAddToCart').click(function (){
+$('#btnAddToCart').click(function () {
 
-    if (qtyValidate()){
+    if (qtyValidate()) {
 
         console.log(qtyValidate())
 
@@ -155,10 +155,10 @@ $('#btnAddToCart').click(function (){
         let unitPrice = $('#poItemUP').val();
         let buyingQty = $('#poItemQty').val();
 
-        total+=unitPrice*buyingQty;
+        total += unitPrice * buyingQty;
 
         let cart = $("#pOTBody");
-        let tr = $('<tr> <td>'+bItemId+'</td> <td>'+desc+'</td> <td>'+buyingQty+'</td> <td>'+unitPrice+'</td></tr>');
+        let tr = $('<tr> <td>' + bItemId + '</td> <td>' + desc + '</td> <td>' + buyingQty + '</td> <td>' + unitPrice + '</td></tr>');
         cart.append(tr);
         console.log(total);
         totalField.val(total);
@@ -167,8 +167,8 @@ $('#btnAddToCart').click(function (){
 });
 
 //
-$('#pOTBody').dblclick(function (event){
-    if(confirm("Do You Want to delete item ?")){
+$('#pOTBody').dblclick(function (event) {
+    if (confirm("Do You Want to delete item ?")) {
         event.target.closest("tr").remove();
     }
 });
@@ -177,38 +177,42 @@ function getAllCartData() {
     let cart = $('#pOTBody tr');
 
     cart.each(function () {
-        let rowData = [];
+        let rowData = {};
 
-        $(this).find('td').each(function () {
-            rowData.push($(this).text());
-        });
+        let cells = $(this).find('td');
+
+        rowData["id"] = $(cells[0]).text();
+        rowData["desc"] = $(cells[1]).text();
+        rowData["qty"] = $(cells[2]).text();
+        rowData["up"] = $(cells[3]).text();
+
         cartItems.push(rowData);
     });
 
     console.log(cartItems);
 }
 
-$('#purchaseOrder').click(function (){
+$('#purchaseOrder').click(function () {
 
     let orderID = $('#currentOrderID').val();
     let date = $('#dtf').val();
     getAllCartData();
-    let order={
-        orderID:orderID,
-        date:date,
-        amount:total,
-        customer:selectedCustomerID,
-        details:cartItems
+    let order = {
+        orderID: orderID,
+        date: date,
+        amount: total,
+        customer: selectedCustomerID,
+        details: cartItems
     }
 
     $.ajax({
-        url:'http://localhost:8080/Back_End_Web_exploded/placeOrder',
-        method:"POST",
-        contentType:"application/json",
-        data:JSON.stringify(order),
-        success:function (res) {
+        url: 'http://localhost:8080/Back_End_Web_exploded/placeOrder',
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(order),
+        success: function (res) {
         },
-        error:function (error) {
+        error: function (error) {
             console.log(error.status);
         }
     })
@@ -216,22 +220,22 @@ $('#purchaseOrder').click(function (){
 });
 
 
-function qtyValidate(){
+function qtyValidate() {
 
-    if (/^\d+$/.test($('#poItemQty').val())){
+    if (/^\d+$/.test($('#poItemQty').val())) {
         let qtyOnHand = $('#poItemQtyOnHand').val();
-        $('#poItemQty').css("border-color",'white');
+        $('#poItemQty').css("border-color", 'white');
 
-        if (qtyOnHand>=Number($('#poItemQty').val())){
-            $('#poItemQty').css("border-color",'white');
+        if (qtyOnHand >= Number($('#poItemQty').val())) {
+            $('#poItemQty').css("border-color", 'white');
             return true;
-        }else {
-            $('#poItemQty').css("border-color",'red');
+        } else {
+            $('#poItemQty').css("border-color", 'red');
             return false;
         }
 
-    }else {
-        $('#poItemQty').css("border-color",'red');
+    } else {
+        $('#poItemQty').css("border-color", 'red');
         return false;
     }
 }
