@@ -129,17 +129,13 @@ public class PlaceOrderServlet extends HttpServlet {
 
         JsonArray details = readObject.getJsonArray("details");
 
+        for (JsonValue item:details) {
 
-        for (int i = 0; i < details.size(); i++) {
-            JsonArray innerArray = details.getJsonArray(i);
+            System.out.println(item.asJsonObject().getString("id"));
+            System.out.println(item.asJsonObject().getString("desc"));
+            System.out.println(item.asJsonObject().getString("qty"));
+            System.out.println(item.asJsonObject().getString("up"));
 
-            String value1 = innerArray.getString(0);
-            String value2 = innerArray.getString(1);
-            String value3 = innerArray.getString(2);
-
-            System.out.println(value1);
-            System.out.println(value2);
-            System.out.println(value3);
         }
 
     }
