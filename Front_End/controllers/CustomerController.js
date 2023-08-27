@@ -1,4 +1,4 @@
-let cusId;
+let newCusID;
 
 //customer fields
 const cusIDF = $('#cid');
@@ -48,6 +48,10 @@ function addCustomersToTable() {
         success:function (res) {
             //console.log(res);
             tblCustomers.empty();
+
+            console.log()
+            incrementCustomerID(res[res.length-1].id);
+            cusIDF.val(newCusID);
 
             for (let i = 0; i < res.length; i++) {
                 let row = $('<tr> <td>'+ res[i].id +'</td> <td>'+ res[i].name +'</td> <td>'+ res[i].address +'</td> <td>'+ res[i].contact +'</td> </tr>');
@@ -146,6 +150,15 @@ btnDelete.click(function (){
 btnClear.click(function (){
     clearCustomerFields();
 });
+
+function incrementCustomerID(currentCustomID) {
+    const parts = currentCustomID.split('-');
+    const numberPart = parseInt(parts[1], 10);
+    const incrementedNumber = numberPart + 1;
+    const newNumberPart = String(incrementedNumber).padStart(3, '0');
+    newCusID= `C00-${newNumberPart}`;
+}
+
 
 //Regex Validations
 $('#cid, #Name, #Address, #contact').keyup(function (event){
