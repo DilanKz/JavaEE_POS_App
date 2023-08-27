@@ -12,6 +12,8 @@ const itemDescF = $('#ItemDesc');
 const itemPF = $('#UPrice');
 const itemQtyF = $('#Qty');
 
+let newItemID;
+
 addItemsToTable();
 
 
@@ -30,6 +32,10 @@ function addItemsToTable() {
         success:function (res) {
             console.log(res);
             tblItems.empty();
+
+            console.log()
+            incrementItem(res[res.length-1].code);
+            itemIdF.val(newItemID);
 
             for (let i = 0; i < res.length; i++) {
                 let row = $('<tr> <td>'+ res[i].code +'</td> <td>'+ res[i].name +'</td> <td>'+ res[i].qtyOnHand +'</td> <td>'+ res[i].unitPrice +'</td> </tr>');
@@ -132,6 +138,15 @@ btnItemDelete.click(function (){
 btnItemClear.click(function (){
     clearItemFields();
 });
+
+function incrementItem(currentCustomID) {
+    const parts = currentCustomID.split('-');
+    const numberPart = parseInt(parts[1], 10);
+    const incrementedNumber = numberPart + 1;
+    const newNumberPart = String(incrementedNumber).padStart(3, '0');
+    newItemID= `I00-${newNumberPart}`;
+}
+
 
 //regex for item fields
 const itemNameRegex = /^[a-zA-Z0-9\s]+$/;
