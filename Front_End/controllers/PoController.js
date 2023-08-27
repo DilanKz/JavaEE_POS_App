@@ -1,17 +1,20 @@
 let selectCusIds = $('#customerIds');
 let selectItemIds = $('#itemIds');
 let totalField = $('#maxTot');
+let orderTable = $('#allOrderTable');
 
 let selectedCustomerID;
 let total = 0;
 let cartItems = [];
+let orderID;
 
 function nextOrderID() {
 
 }
 
-loadCustomerOptionIds()
-loadItemOptionIds()
+loadCustomerOptionIds();
+loadItemOptionIds();
+loadAllOrders();
 
 function loadCustomerOptionIds() {
     /*selectCusIds.empty();
@@ -211,7 +214,7 @@ $('#purchaseOrder').click(function () {
         contentType: "application/json",
         data: JSON.stringify(order),
         success: function (res) {
-            console.log(res.state)
+            updateItems()
         },
         error: function (error) {
             console.log(error.status);
@@ -219,6 +222,21 @@ $('#purchaseOrder').click(function () {
     })
 
 });
+
+function updateItems() {
+    $.ajax({
+        url: 'http://localhost:8080/Back_End_Web_exploded/placeOrder',
+        method: "PUT",
+        contentType: "application/json",
+        data: JSON.stringify(cartItems),
+        success: function (res) {
+
+        },
+        error: function (error) {
+            console.log(error.status);
+        }
+    })
+}
 
 
 function qtyValidate() {
@@ -239,4 +257,45 @@ function qtyValidate() {
         $('#poItemQty').css("border-color", 'red');
         return false;
     }
+}
+
+
+function getCurrentDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
+$('#dtf').val(getCurrentDate());
+
+function loadAllOrders() {
+    $.ajax({
+        url:'http://localhost:8080/Back_End_Web_exploded/placeOrder?option=orders',
+        success:function (res) {
+            //allOrderTable
+            orderTable.empty();
+
+            incrementOrderID(res[res.length-1].id);
+            $('#currentOrderID').val(orderID);
+
+            for (let i = 0; i < res.length; i++) {
+                let row = $('<tr> <td>'+ res[i].id +'</td> <td>'+ res[i].date +'</td> <td>'+ res[i].name +'</td> <td>'+ res[i].total +'</td> </tr>');
+                orderTable.append(row);
+            }
+        },
+        error:function (error) {
+            console.log(error.status);
+        }
+    })
+}
+
+
+function incrementOrderID(currentOrderID) {
+    const parts = currentOrderID.split('-');
+    const number = parseInt(parts[1], 10);
+    const incrementedNumber = number + 1;
+    const newID = String(incrementedNumber).padStart(3, '0');
+    orderID = `O-${newID}`;
 }
