@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.sql.*;
 
 @WebServlet(urlPatterns = "/item")
-public class ItemServlet extends HttpServlet {
+public class ItemServletAPI extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
