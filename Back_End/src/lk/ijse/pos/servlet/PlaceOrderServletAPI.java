@@ -209,8 +209,22 @@ public class PlaceOrderServletAPI extends HttpServlet {
                         if (pstm2.executeUpdate() > 0) {
                             i++;
                             if (i==details.size()){
-                                connection.commit();
-                                resp.getWriter().print(addJSONObject("Added", "ok"));
+
+                                for (JsonValue items : details) {
+                                    PreparedStatement pstm3 = connection.prepareStatement("update iteminfo set itemQty = itemQty - ? where itemID=?");
+                                    pstm3.setObject(2, items.asJsonObject().getString("id"));
+                                    pstm3.setObject(1, items.asJsonObject().getString("qty"));
+
+                                    if (pstm3.executeUpdate() > 0) {
+                                        if (i==details.size()){
+
+                                        }
+                                        connection.commit();
+                                        resp.getWriter().print(addJSONObject("Added", "ok"));
+                                    }
+
+                                }
+
                             }
                         }
                     }
@@ -249,10 +263,10 @@ public class PlaceOrderServletAPI extends HttpServlet {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/webpos?allowPublicKeyRetrieval=true&useSSL=false", "root", "1234");
 
             for (JsonValue item : jsonValues) {
-                PreparedStatement pstm = connection.prepareStatement("insert into ordersdetails values(?,?,?,?)");
+                PreparedStatement pstm = connection.prepareStatement("update iteminfo set itemQty = itemQty - ? where itemID=?");
+                //PreparedStatement pstm3 = connection.prepareStatement("update iteminfo set itemDesc=?,itemQty=?,unitPrice=? where itemID=?");
                 pstm.setObject(2, item.asJsonObject().getString("id"));
-                pstm.setObject(3, item.asJsonObject().getString("qty"));
-                pstm.setObject(4, item.asJsonObject().getString("up"));
+                pstm.setObject(1, item.asJsonObject().getString("qty"));
 
                 if (pstm.executeUpdate() > 0) {
                     resp.getWriter().print(addJSONObject("item Updated", "ok"));
