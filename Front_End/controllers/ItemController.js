@@ -30,7 +30,7 @@ function addItemsToTable() {
     $.ajax({
         url:'http://localhost:8080/Back_End_Web_exploded/item',
         success:function (res) {
-            console.log(res);
+            //console.log(res);
             tblItems.empty();
 
             console.log()

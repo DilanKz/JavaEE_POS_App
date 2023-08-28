@@ -270,13 +270,15 @@ function getCurrentDate() {
 }
 $('#dtf').val(getCurrentDate());
 
+let allOrders;
+
 function loadAllOrders() {
     $.ajax({
         url:'http://localhost:8080/Back_End_Web_exploded/placeOrder?option=orders',
         success:function (res) {
             //allOrderTable
             orderTable.empty();
-
+            allOrders=res;
             incrementOrderID(res[res.length-1].id);
             $('#currentOrderID').val(orderID);
 
@@ -291,6 +293,28 @@ function loadAllOrders() {
     })
 }
 
+$('#searchBtn').click(function () {
+
+    let indexes = findIndexesByProperty($('#searchField').val());
+
+    if (indexes.length!==0){
+
+        orderTable.empty();
+
+        for (let i = 0; i < indexes.length; i++) {
+            let row = $('<tr> <td>'+ allOrders[indexes[i]].id +'</td> <td>'+ allOrders[indexes[i]].date +'</td> <td>'+ allOrders[indexes[i]].name +'</td> <td>'+ allOrders[indexes[i]].total +'</td> </tr>');
+            orderTable.append(row);
+        }
+
+
+    }else {
+        loadAllOrders();
+    }
+
+    console.log(indexes)
+    console.log(indexes[0])
+    console.log(indexes.length)
+})
 
 function incrementOrderID(currentOrderID) {
     const parts = currentOrderID.split('-');
@@ -298,4 +322,27 @@ function incrementOrderID(currentOrderID) {
     const incrementedNumber = number + 1;
     const newID = String(incrementedNumber).padStart(3, '0');
     orderID = `O-${newID}`;
+}
+
+//searchBtn
+
+function findIndexesByProperty(searchValue) {
+    let indexes = [];
+    console.log(searchValue);
+    for (let i = 0; i < allOrders.length; i++) {
+        if (allOrders[i].id === searchValue) {
+            indexes.push(i);
+            console.log(allOrders[i].id);
+        }
+
+        if (allOrders[i].name === searchValue) {
+            indexes.push(i);
+        }
+
+        if (allOrders[i].date === searchValue) {
+            indexes.push(i);
+        }
+    }
+
+    return indexes;
 }
