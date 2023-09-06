@@ -209,14 +209,15 @@ public class PlaceOrderServletAPI extends HttpServlet {
                         if (pstm2.executeUpdate() > 0) {
                             i++;
                             if (i==details.size()){
-
+                                int j=0;
                                 for (JsonValue items : details) {
+                                    j++;
                                     PreparedStatement pstm3 = connection.prepareStatement("update iteminfo set itemQty = itemQty - ? where itemID=?");
                                     pstm3.setObject(2, items.asJsonObject().getString("id"));
                                     pstm3.setObject(1, items.asJsonObject().getString("qty"));
 
                                     if (pstm3.executeUpdate() > 0) {
-                                        if (i==details.size()){
+                                        if (j==details.size()){
 
                                         }
                                         connection.commit();

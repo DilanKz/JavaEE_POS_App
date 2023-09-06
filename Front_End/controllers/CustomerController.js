@@ -45,6 +45,9 @@ function addCustomersToTable() {
     //Ajax
     $.ajax({
         url:'http://localhost:8080/Back_End_Web_exploded/customer',
+        headers:{
+            Auth:"user=admin,pass=admin"
+        },
         success:function (res) {
             //console.log(res);
             tblCustomers.empty();
